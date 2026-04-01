@@ -1,7 +1,17 @@
 const express = require('express');
 const path = require('path');
 const nodemailer = require('nodemailer');
+
+require('dotenv').config();
+const connectDB = require('./app/config/db');
 const app = express();
+
+connectDB();
+
+
+
+
+
 
 // 1. Setup EJS
 app.set('view engine', 'ejs');
@@ -12,11 +22,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'app'))); 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // For any additional public assets
+
 
 // 3. Page Routes
-app.get('/', (req, res) => {
-    res.render('index'); // Renders views/index.ejs
-});
+
+app.use('/', require('./app/routes/ui/home.controller'));
+
 
 // 4. Email Sending Route (For your Startup Inquiry)
 app.post('/send-inquiry', async (req, res) => {
@@ -59,4 +71,10 @@ app.post('/send-inquiry', async (req, res) => {
 });
 
 // 5. Vercel Export
-module.exports = app;
+// module.exports = app;
+
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+});  
+
+
